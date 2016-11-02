@@ -56,3 +56,7 @@ public class Counter {
     }
 }
 */
+
+// For this exercise either way is equally valid
+
+// If the value n was not atomic, we would also need to synchronize the get method
