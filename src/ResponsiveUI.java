@@ -43,6 +43,8 @@ public class ResponsiveUI implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        finishedTasks += taskNumber;
+        synchronized (this) {
+            finishedTasks += (finishedTasks.equals("") ? taskNumber : ", " + taskNumber);
+        }
     }
 }
