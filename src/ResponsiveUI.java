@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author crkimberley on 02/11/2016.
@@ -7,6 +8,7 @@ public class ResponsiveUI implements Runnable {
     private final int duration;
     private final int taskNumber;
     private static String finishedTasks = "";
+    private static int runningTasks = 0;
 
     public ResponsiveUI(int taskNumber, int duration) {
         this.taskNumber = taskNumber;
@@ -30,11 +32,23 @@ public class ResponsiveUI implements Runnable {
             int length = input.nextInt();
             Thread thread = new Thread(new ResponsiveUI(i, length));
             thread.start();
+            runningTasks++;
             if (!finishedTasks.equals("")) {
                 System.out.println("Finished tasks: " + finishedTasks);
                 finishedTasks = "";
             }
         }
+        // Program could finish before all tasks are complete
+        // so this loop keeps checking whether there are any tasks still running
+        while (runningTasks > 0) {
+            System.out.println("Tasks still running: " + runningTasks + "\t- checking every second");
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+        System.out.println("ALL TASKS COMPLETE");
     }
 
     public void run() {
@@ -45,6 +59,7 @@ public class ResponsiveUI implements Runnable {
         }
         synchronized (this) {
             finishedTasks += (finishedTasks.equals("") ? taskNumber : ", " + taskNumber);
+            runningTasks--;
         }
     }
 }
