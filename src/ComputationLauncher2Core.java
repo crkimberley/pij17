@@ -9,12 +9,13 @@
  * the machine, parallel computations finish
  * earlier.
  */
-public class ComputationLauncher {
+public class ComputationLauncher2Core {
     /**
      * How many numbers to process? If too low, there is no noticeable
      * difference.
      */
-    public static final int COUNT = 40000000;
+    // Original value in supplied code 40000000 - too big for MacBook, get "java.lang.OutOfMemoryError: Java heap space"
+    public static final int COUNT =10000000;
 
     /*
      * The computations to be performed. Stored as fields so
@@ -30,7 +31,7 @@ public class ComputationLauncher {
      * @param args command-line arguments, ignored
      */
     public static void main(String args[]) {
-        ComputationLauncher c = new ComputationLauncher();
+        ComputationLauncher2Core c = new ComputationLauncher2Core();
         c.launch();
     }
 
@@ -45,7 +46,7 @@ public class ComputationLauncher {
 
     private void launch() {
         // Uncomment the following line to know how many processors your machine has
-        // System.out.println("#CPU: " + Runtime.getRuntime().availableProcessors());
+         System.out.println("#CPU: " + Runtime.getRuntime().availableProcessors());
         long start, stop;
         c1 = new Computation(createArray(COUNT/2));
         c2 = new Computation(createArray(COUNT/2));
