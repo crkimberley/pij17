@@ -10,8 +10,15 @@ import java.text.SimpleDateFormat;
  * @author crkimberley on 02/11/2016.
  */
 
+// CODE PROVIDED IN QUESTION - comments added...looking for problems...improvements?
 public class ImmutableExample
 {
+
+    // Officer - sets name, dateOfBirth & photo
+    // Citizen - prints name & dateOfBirth
+    // DataGenerator - supplies name, dateOfBirth & photo
+    // MutableIDCard: 3 fields - name, dateOfBirth, photo...provides getters, setters & check method for valid data
+
     public static void main(String[] args)
     {
         String name = DataGenerator.getNextName();
@@ -20,6 +27,7 @@ public class ImmutableExample
 
         MutableIDCard id = new MutableIDCard(name,dateOfBirth,photo);
 
+        // Both officer & citizen use same id (why? mistake?)
         Runnable officer = new Officer(id);
         Runnable citizen = new Citizen(id);
 
@@ -74,17 +82,20 @@ class DataGenerator
 
 class MutableIDCard
 {
+    // COULD MAKE THESE FIELDS FINAL
     private String name;
     private Date dateOfBirth;
     private BufferedImage photo;
 
     public MutableIDCard(String name,Date dateOfBirth,BufferedImage photo)
     {
+        // MAKE DEFENSIVE COPIES HERE...eg. this.name = new String(name)
         this.name=name;
         this.dateOfBirth=dateOfBirth;
         this.photo=photo;
     }
 
+    // REMOVE SETTER?
     public void set(String name,Date dateOfBirth,BufferedImage photo)
     {
         check(name,dateOfBirth,photo);
