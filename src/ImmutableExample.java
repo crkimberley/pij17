@@ -11,6 +11,8 @@ import java.text.SimpleDateFormat;
  */
 
 // CODE PROVIDED IN QUESTION - comments added...looking for problems...improvements?
+
+    // MAKE CLASS FINAL?
 public class ImmutableExample
 {
 
