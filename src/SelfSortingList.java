@@ -1,19 +1,16 @@
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author crkimberley on 07/11/2016.
  */
 public class SelfSortingList {
 
-    private Node head;
-    private boolean sorted, stopped;
-    private SortAssist sortAssist;
-    private Thread thread;
+    private Node head = new Node();
+    private boolean sorted = true;
+    private SortAssist sortAssist = new SortAssist(this);
+    private Thread thread = new Thread(sortAssist);
 
     public SelfSortingList() {
-        head = new Node();
-        sorted = true;
-        stopped = false;
-        sortAssist = new SortAssist(this);
-        thread = new Thread(sortAssist);
         thread.start();
     }
 
@@ -24,11 +21,16 @@ public class SelfSortingList {
         }
         tempNode.next = new Node(value);
         setSorted(false);
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
-    public boolean sort() {
+    public void sort() {
         int swapCount = 0;
-        for (Node temp = head.next; temp != null && temp.next != null && swapCount < 10; temp = temp.next) {
+        for (Node temp = head.next; temp != null && temp.next != null && swapCount < 5; temp = temp.next) {
             if (temp.value > temp.next.value) {
                 int tempValue = temp.value;
                 temp.value = temp.next.value;
@@ -36,24 +38,32 @@ public class SelfSortingList {
                 swapCount++;
             }
         }
-        sorted = checkListIsSorted();
-        setSorted(sorted);
         printList();
+        checkListIsSorted();
+    }
+
+    public synchronized void setSorted(boolean sorted) {
+        this.sorted = sorted;
+        sortAssist.notifySortedChange();
+    }
+
+    public void checkListIsSorted() {
+        for (Node temp = head.next; temp != null && temp.next != null; temp = temp.next) {
+            if (temp.value > temp.next.value) {
+                setSorted(false);
+                return;
+            }
+        }
+        setSorted(true);
+    }
+
+    public boolean isSorted() {
         return sorted;
     }
 
-    public boolean checkListIsSorted() {
-        for (Node temp = head.next; temp != null && temp.next != null; temp = temp.next) {
-            if (temp.value > temp.next.value) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /*public int get(int index) {
+    public int get(int index) {
         return sortAssist.getValueAtIndexOnceSorted(index);
-    }*/
+    }
 
     public int getValueAtIndex(int index) {
         Node temp = head.getNext();
@@ -66,15 +76,6 @@ public class SelfSortingList {
         return -1;
     }
 
-    public boolean isSorted() {
-        return sorted;
-    }
-
-    public void setSorted(boolean sorted) {
-        this.sorted = sorted;
-        sortAssist.notifySortedChange();
-    }
-
     public void printList() {
         for (Node temp = head.next; temp != null; temp = temp.next) {
             System.out.print(temp.value + " ");
@@ -82,43 +83,66 @@ public class SelfSortingList {
         System.out.println();
     }
 
-    public boolean isStopped() {
-        return stopped;
+    public Thread getThread() {
+        return thread;
     }
 
-    public void stop() {
-        stopped = true;
-        sortAssist.notifySortedChange();
+
+    private static class SortAssist implements Runnable {
+        private SelfSortingList selfSortingList;
+
+        public SortAssist(SelfSortingList selfSortingList) {
+            this.selfSortingList = selfSortingList;
+        }
+
+        @Override
+        public synchronized void run() {
+            for (;;) {
+                while (selfSortingList.isSorted()) {
+                    try {
+                        wait();
+                    } catch (InterruptedException ex) {
+                        System.out.println("\nSortAssist thread interrupted");
+                        return;
+                    }
+                }
+                selfSortingList.sort();
+            }
+        }
+
+        public synchronized void notifySortedChange() {
+            notifyAll();
+        }
+
+        public synchronized int getValueAtIndexOnceSorted(int index) {
+            while (!selfSortingList.isSorted()) {
+                try {
+                    wait();
+                } catch (InterruptedException ex) {
+                    // wait less
+                }
+            }
+            return selfSortingList.getValueAtIndex(index);
+        }
     }
+
 
     private static class Node {
         private int value;
-        private Node next;
+        private Node next = null;
 
-        public Node() {
-            this.next = null;
-        }
+        public Node() {}
 
         public Node(int value) {
             this.value = value;
-            this.next = null;
         }
-
 
         public int getValue() {
             return value;
         }
 
-        public void setValue(int value) {
-            this.value = value;
-        }
-
         public Node getNext() {
             return next;
-        }
-
-        public void setNext(Node next) {
-            this.next = next;
         }
     }
 }
