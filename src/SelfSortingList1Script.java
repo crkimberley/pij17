@@ -3,11 +3,11 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author crkimberley on 08/11/2016.
  */
-public class SelfSortingListScript {
+public class SelfSortingList1Script {
     public static void main(String[] args) {
         for (int i=0; i<10; i++) {
-            System.out.println("\n\nNEW LAUNCH");
-            Thread thread = new SelfSortingListScript().launch().getThread();
+            System.out.println();
+            Thread thread = new SelfSortingList1Script().launch().getThread();
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
@@ -17,8 +17,8 @@ public class SelfSortingListScript {
         }
     }
 
-    private SelfSortingList launch() {
-        SelfSortingList list = new SelfSortingList();
+    private SelfSortingList1 launch() {
+        SelfSortingList1 list = new SelfSortingList1();
 
         list.add(9);
         list.add(8);

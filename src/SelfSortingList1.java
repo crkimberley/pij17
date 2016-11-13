@@ -1,16 +1,14 @@
-import java.util.concurrent.TimeUnit;
-
 /**
  * @author crkimberley on 07/11/2016.
  */
-public class SelfSortingList {
+public class SelfSortingList1 {
 
     private Node head = new Node();
     private boolean sorted = true;
     private SortAssist sortAssist = new SortAssist(this);
     private Thread thread = new Thread(sortAssist);
 
-    public SelfSortingList() {
+    public SelfSortingList1() {
         thread.start();
     }
 
@@ -89,16 +87,16 @@ public class SelfSortingList {
 
 
     private static class SortAssist implements Runnable {
-        private SelfSortingList selfSortingList;
+        private SelfSortingList1 selfSortingList1;
 
-        public SortAssist(SelfSortingList selfSortingList) {
-            this.selfSortingList = selfSortingList;
+        public SortAssist(SelfSortingList1 selfSortingList1) {
+            this.selfSortingList1 = selfSortingList1;
         }
 
         @Override
         public synchronized void run() {
             for (;;) {
-                while (selfSortingList.isSorted()) {
+                while (selfSortingList1.isSorted()) {
                     try {
                         wait();
                     } catch (InterruptedException ex) {
@@ -106,7 +104,7 @@ public class SelfSortingList {
                         return;
                     }
                 }
-                selfSortingList.sort();
+                selfSortingList1.sort();
             }
         }
 
@@ -115,14 +113,14 @@ public class SelfSortingList {
         }
 
         public synchronized int getValueAtIndexOnceSorted(int index) {
-            while (!selfSortingList.isSorted()) {
+            while (!selfSortingList1.isSorted()) {
                 try {
                     wait();
                 } catch (InterruptedException ex) {
                     // wait less
                 }
             }
-            return selfSortingList.getValueAtIndex(index);
+            return selfSortingList1.getValueAtIndex(index);
         }
     }
 
